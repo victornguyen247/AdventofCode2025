@@ -1,12 +1,9 @@
 def largestNumber(strNum: str) -> int:
+    if len(strNum) ==0:
+        return -1
     if len(strNum) < 2:
         return int(strNum)
-    
-    if( "0" in strNum):
-        print("found zero in ")
-        return -1
-    #print(f"strNum: {strNum}")
-    
+
     maxdigit = 0
     maxvalue = -1
     for i in range(len(strNum)):
@@ -14,8 +11,16 @@ def largestNumber(strNum: str) -> int:
         if( int(strNum[i]) >= maxdigit):
             maxdigit = int(strNum[i])
         #print(f"process: {strNum[:(i+1)]}, maxvalue: {maxvalue}, maxdigit: {maxdigit}")
-    #print(f"maxvalues: {maxvalue}")
+    print(f"maxvalues: {maxvalue}")
     return maxvalue
+
+def largestNum_len12(strNum: str) -> int:
+    if len(strNum) ==0:
+        return -1
+    if len(strNum) <= 12:
+        return int(strNum)
+    
+    return -1
 
 def read_file(path: str):
     with open(path,'r') as f:
@@ -34,4 +39,4 @@ def total_joltage(path:str)->int:
 
 if __name__ == '__main__':
 
-    print(total_joltage("input3-0.txt"))
+    print(total_joltage("input3-1.txt"))
