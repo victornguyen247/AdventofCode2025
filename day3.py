@@ -5,27 +5,17 @@ def largestNumber(strNum: str) -> int:
     if( "0" in strNum):
         print("found zero in ")
         return -1
+    #print(f"strNum: {strNum}")
     
-    num1 = "0"
-    num2 = strNum[0]
-    for i in range(1,len(strNum)):
-        if int(strNum[i]) > int(num2):
-            num1 = num2
-            num2 = strNum[i]
-    
-    num4 ="0"
-    num3 = strNum[len(strNum)-1]
-    for i in range(len(strNum)-2, -1, -1):
-        if int(strNum[i]) > int(num3):
-            num4 = num3
-            num3 = strNum[i]
-
-    num12 = int(num1 + num2)
-    if num4 == "0":
-        num34 = int(num3)
-    else:
-        num34 = int(num3 + num4)
-    return max(num12, num34)
+    maxdigit = 0
+    maxvalue = -1
+    for i in range(len(strNum)):
+        maxvalue = max(maxvalue, int(str(maxdigit)+ strNum[i])) 
+        if( int(strNum[i]) >= maxdigit):
+            maxdigit = int(strNum[i])
+        #print(f"process: {strNum[:(i+1)]}, maxvalue: {maxvalue}, maxdigit: {maxdigit}")
+    #print(f"maxvalues: {maxvalue}")
+    return maxvalue
 
 def read_file(path: str):
     with open(path,'r') as f:
@@ -37,11 +27,11 @@ def read_file(path: str):
 def total_joltage(path:str)->int:
     lines = read_file(path)
     total = 0
-    for line in lines:
+    for line in lines[:20]:
         largest = largestNumber(line)
         total += largest
     return total
 
 if __name__ == '__main__':
 
-    print(total_joltage("input3-1.txt"))
+    print(total_joltage("input3-0.txt"))
