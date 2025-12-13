@@ -24,20 +24,20 @@ def largestNum_len12(strNum: str) -> int:
     s = 0
     e = len(strNum) - 12
     for i in range(12):
-        maxdigit, index = maxdigit(strNum,s,e)
-        lnum += str(maxdigit)
-        s = index
+        max_digit, index = maxdigit(strNum,s,e)
+        lnum += str(max_digit)
+        s = index +1
         e += 1
     return int(lnum)
 
 def maxdigit(strNum: str,start:int, end:int):
-    maxdigit = 0
+    max_digit = 0
     index = -1
     for i in range(start, end+1):
-        if( int(strNum[i]) >= maxdigit):
-            maxdigit = int(strNum[i])
+        if( int(strNum[i]) >= max_digit):
+            max_digit = int(strNum[i])
             index = i
-    return maxdigit, index
+    return max_digit, index
 
 def read_file(path: str):
     with open(path,'r') as f:
@@ -46,21 +46,22 @@ def read_file(path: str):
     lines = [line.strip() for line in lines]
     return lines
 
-def total_joltage(path:str, end:int = 100)->int:
+def total_joltage(path:str)->int:
     lines = read_file(path)
     total = 0
-    for line in lines[:end]:
-        largest = largestNumber(line)
+    for line in lines:
+        #largest = largestNumber(line)
+        largest = largestNum_len12(line)
         total += largest
     return total
 
 def test_largestNumber():
-    lines = read_file("test3-0.txt")
+    lines = read_file("input3-0.txt")
     for line in lines:
         result = largestNum_len12(line)
         print(f"largestNumber({line}) = {result}")
 
 if __name__ == '__main__':
 
-    #print(total_joltage("input3-1.txt", 20))
-    print(total_joltage("input3-0.txt"))
+    print(total_joltage("input3-1.txt"))
+    #print(test_largestNumber())
