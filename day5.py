@@ -25,10 +25,12 @@ def total_fresh_ids(id_ranges):
     union = set()
     for (start, end) in id_ranges:
         merged = False
-        for r in id_ranges:
+        for r in union:
             if check_overlap_2ranges((start, end), r):
-                (start, end) = union_2sets((start, end), r)
+                (s, e) = union_2ranges((start, end), r)
                 merged = True
+                union.remove(r)
+                union.add((start, end))
 
 def check_overlap_2ranges(r1, r2):
     (s1, e1) = r1
