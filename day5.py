@@ -22,25 +22,18 @@ def validate_ids(id_ranges, ids):
     return num_fresh
 
 def total_fresh_ids(id_ranges):
-    union = list()
-    for [s, e] in id_ranges:
-        print(f"Processing range: {[s, e]}")
-        merged = False
-        for i in range(len(union)):
-            print("r:", union[i], "s,e:", [s,e])
-            if check_overlap_2ranges([s, e], union[i]):
-                union[i] = union_2ranges([s, e], union[i])
-                merged = True
-                break
-        if not merged:
-            union.append([s, e])
-            print("add new:", [s,e])
-        print("Current union:",union)
-        print("-------------------------")
-    
+    id_ranges = sorted(id_ranges, key=lambda x: x[0])
+    i = 0
+    while i < len(id_ranges)-1:
+        if (check_overlap_2ranges(id_ranges[i], id_ranges[i+1])):
+            id_ranges[i] = union_2ranges(id_ranges[i], id_ranges[i+1])
+            id_ranges.pop(i+1)
+        else: i += 1
+
+    print("final ranges:", id_ranges)
     total = 0
     print("===================")
-    for (s, e) in union:
+    for (s, e) in id_ranges:
         print("range:", (s, e))
         total += (e - s + 1)
     return total
@@ -62,7 +55,7 @@ def union_2ranges(r1, r2):
     return urange
 
 if __name__ == "__main__":
-    id_ranges, ids = prepare_data("input5-0.txt")
+    id_ranges, ids = prepare_data("input5-1.txt")
     #num_fresh = validate_ids(id_ranges, ids)
     #print(f"Number of valid IDs: {num_fresh}")
     print("total fresh ids:", total_fresh_ids(id_ranges))
