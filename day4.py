@@ -1,32 +1,47 @@
-def accessible(map, posy:int, posx:int) -> bool:
+def accessible(map, posi:int, posj:int) -> bool:
     adjecent_positions = [
-        (posx - 1, posy -1),
-        (posx    , posy -1),
-        (posx + 1, posy -1),
-        (posx - 1, posy    ),
-        (posx + 1, posy    ),
-        (posx - 1, posy +1),
-        (posx    , posy +1),
-        (posx + 1, posy +1),
+        (posi - 1, posj -1),
+        (posi    , posj -1),
+        (posi + 1, posj -1),
+        (posi - 1, posj    ),
+        (posi + 1, posj    ),
+        (posi - 1, posj +1),
+        (posi    , posj +1),
+        (posi + 1, posj +1),
     ]
     count = 0
-    for (x, y) in adjecent_positions:
-        if 0 <= x < len(map[0]) and 0 <= y < len(map):
-            if map[y][x] == '@':
+    for (i, j) in adjecent_positions:
+        if 0 <= i < len(map) and 0 <= j < len(map[0]):
+            if map[i][j] == '@':
                 count += 1
     return True if count <4 else False
 
 def total_accessible(map) -> int:
     total = 0
-    for y in range(len(map)):
-        for x in range(len(map[0])):
-            if map[y][x] == '@' and accessible(map, y, x):
+    list_accessible = []
+    for i in range(len(map)):
+        for j in range(len(map[0])):
+            if map[i][j] == '@' and accessible(map, i,j):
+                list_accessible.append((i,j))
                 total += 1
+    
+    show_map(map, list_accessible)
     return total
+
 def prepare_map(path: str) -> list:
     with open(path, 'r') as f:
-        map = f.read_lines()
+        map = f.readlines()
+    map = [list(line.strip()) for line in map]
     return map
+
+def show_map(map, marklist):
+    for i in range(len(map)):
+        for j in range(len(map[0])):
+            if (i,j) in marklist:
+                print('X', end='')
+            else:
+                print(map[i][j], end='')
+        print()
 
 if __name__ == "__main__":
     map = prepare_map('input4-0.txt')
