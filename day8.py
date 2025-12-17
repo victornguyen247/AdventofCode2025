@@ -111,7 +111,7 @@ if __name__ == "__main__":
     min_heap = dis_list_asc(data)
     #print(min_heap)
     #part1
-    #print(part1(min_heap.copy(), data, n= 10))
+    print(part1(min_heap.copy(), data, n= 10))
     #part2
     print(part2(min_heap.copy()))
     
