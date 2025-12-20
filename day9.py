@@ -1,3 +1,4 @@
+
 def load_data(path):
     with open(path, 'r') as f:
         lines = f.readlines()
@@ -114,146 +115,41 @@ def valid_zone(data):
     
     return ver_zone, hor_zone
 
-from collections import defaultdict
-import bisect
+def sort_pair(a: int, b :int):
+    return (a,b) if a < b else (b,a)
 
-# ------------------------------------------------------------
-# Step 1: Build filled polygon interior (scanline fill)
-# ------------------------------------------------------------
+def check_collapse(edges, rec: tuple):
+    (min_x, min_y, max_x, max_y) = rec
+    for e in edges:
+        (x1,y1,x2,y2) = e
+        if (min_x < x2 and max_x > x1 and min_y < y2 and max_y > y1):
+            return True
+    return False    
 
-def build_inside_intervals(data):
-    """
-    Returns:
-        inside[y] = sorted list [x1, x2, x3, x4, ...]
-        meaning intervals [x1,x2), [x3,x4), ...
-    """
-    edges = []
-    n = len(data)
-
-    # build edges
-    for i in range(n):
-        x1, y1 = data[i]
-        x2, y2 = data[(i + 1) % n]
-        if y1 == y2:
-            continue  # horizontal edges ignored for scanline
-        if y1 > y2:
-            x1, y1, x2, y2 = x2, y2, x1, y1
-        edges.append((x1, y1, y2))
-
-    inside = defaultdict(list)
-
-    min_y = min(y for _, y in data)
-    max_y = max(y for _, y in data)
-
-    for y in range(min_y, max_y):
-        xs = []
-        for x, y1, y2 in edges:
-            if y1 <= y < y2:
-                xs.append(x)
-        xs.sort()
-        for i in range(0, len(xs), 2):
-            inside[y].append(xs[i])
-            inside[y].append(xs[i + 1])
-
-    return inside
-
-
-# ------------------------------------------------------------
-# Step 2: Main Part 2 logic
-# ------------------------------------------------------------
-
-def part2_2(data):
-    inside = build_inside_intervals(data)
-
-    # group red points by row
-    reds_by_y = defaultdict(list)
-    for x, y in data:
-        reds_by_y[y].append(x)
-
-    for y in reds_by_y:
-        reds_by_y[y].sort()
-
-    ys = sorted(reds_by_y.keys())
+def part2_optimal(data: list):
+    edges= list()
+    for k in range(-1,len(data)-1):
+        x1,y1 = data[k]
+        x2,y2 = data[k+1]
+        edges.append((min(x1,x2), min(y1,y2), max(x1,x2), max(y1,y2)))
+    
     max_area = 0
-
-    # try all pairs of red rows
-    for i in range(len(ys)):
-        y1 = ys[i]
-        for j in range(i + 1, len(ys)):
-            y2 = ys[j]
-            height = y2 - y1
-            if height <= 0:
-                continue
-
-            # intersect inside intervals for rows y1 .. y2-1
-            current = None
-            valid = True
-
-            for y in range(y1, y2):
-                if y not in inside:
-                    valid = False
-                    break
-                intervals = inside[y]
-
-                if current is None:
-                    current = intervals[:]
-                else:
-                    new = []
-                    p1 = p2 = 0
-                    while p1 < len(current) and p2 < len(intervals):
-                        a1, a2 = current[p1], current[p1 + 1]
-                        b1, b2 = intervals[p2], intervals[p2 + 1]
-                        lo = max(a1, b1)
-                        hi = min(a2, b2)
-                        if lo < hi:
-                            new.extend([lo, hi])
-                        if a2 < b2:
-                            p1 += 2
-                        else:
-                            p2 += 2
-                    current = new
-                    if not current:
-                        valid = False
-                        break
-
-            if not valid:
-                continue
-
-            # choose widest rectangle using red corners
-            top = reds_by_y[y1]
-            bot = reds_by_y[y2]
-
-            for k in range(0, len(current), 2):
-                L, R = current[k], current[k + 1]
-
-                # leftmost red >= L
-                i1 = bisect.bisect_left(top, L)
-                j1 = bisect.bisect_left(bot, L)
-                if i1 >= len(top) or j1 >= len(bot):
-                    continue
-
-                # rightmost red <= R
-                i2 = bisect.bisect_right(top, R) - 1
-                j2 = bisect.bisect_right(bot, R) - 1
-                if i2 < 0 or j2 < 0:
-                    continue
-
-                x_left = max(top[i1], bot[j1])
-                x_right = min(top[i2], bot[j2])
-
-                if x_left < x_right:
-                    area = (x_right - x_left) * height
-                    max_area = max(max_area, area)
-
+    for i in range(1,len(data)):
+        for j in range(i):
+            x1,y1 = data[i]
+            x2,y2 = data[j]
+            (x1,x2) = sort_pair(int(x1),int(x2))
+            (y1,y2) = sort_pair(int(y1), int(y2))
+            if not check_collapse(edges, (x1,y1,x2,y2)):
+                area = abs(x2-x1+1) * abs(y2 -y1+1)
+                max_area = max(max_area, area)
     return max_area
 
-
-
-                    
 if __name__ == "__main__":
     data = load_data("input9-1.txt")
     #print(part1(data))
     #print("data:",data)
-    print(part2_2(data))
+    print(part2_optimal(data))
     
     # wrong: 1516832966
+    #        1613305596
